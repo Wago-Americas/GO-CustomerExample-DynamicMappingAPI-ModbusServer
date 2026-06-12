@@ -55,11 +55,28 @@ func MakeModbusWriteHandler(client *modbus.ModbusClient, registerAddress uint16)
 
 func main() {
     // ... setup your gin router 'r' and your modbus 'client' ...
+	r := gin.Default()
+	client, err := modbus.NewClient(&modbus.ClientConfiguration{
+		URL:     "tcp://192.168.1.35:502", // Replace with your target device IP/Port
+		Timeout: 1 * time.Second,
+	})
+	if err != nil {
+		fmt.Printf("failed to create client: %v\n", err)
+		return
+	}
+
+	err = client.Open()
+	if err != nil {
+		fmt.Printf("failed to connect to Modbus device: %v\n", err)
+		return
+	}
+	defer client.Close() // Automatically close the connection when main exits
+
 
     // Deploy endpoints pointing to different Modbus registers effortlessly
-    r.POST("/ModuleOneWord", MakeModbusWriteHandler(client, 1))
-    r.POST("/ModuleTwoWord", MakeModbusWriteHandler(client, 2))
-    r.POST("/ModuleThreeWord", MakeModbusWriteHandler(client, 3))
+    r.POST("/ModuleOneWord", MakeModbusWriteHandler(client, 0))
+    r.POST("/ModuleTwoWord", MakeModbusWriteHandler(client, 1))
+    r.POST("/ModuleThreeWord", MakeModbusWriteHandler(client, 2))
 
     
     r.Run(":8080")

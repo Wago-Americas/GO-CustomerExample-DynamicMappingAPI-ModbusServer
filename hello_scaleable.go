@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"time"
+	"github.com/gin-gonic/gin"
+	"github.com/simonvetter/modbus"
 	"net/http"
 	"strconv"
-
-	"://github.com"
-	"://github.com"
 )
 
 // IO represents the expected JSON payload matching your existing struct

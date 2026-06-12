@@ -52,6 +52,30 @@ func MakeModbusWriteHandler(client *modbus.ModbusClient, registerAddress uint16)
 	}
 }
 
+func MakeModbusReadHandler(client *modbus.ModbusClient, registerAddress uint16)  gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		Output, err := client.ReadRegister(registerAddress, modbus.INPUT_REGISTER)
+		if err != nil {
+			fmt.Errorf("Modbus Read failed at address %d: %v\n", registerAddress, err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read data to Modbus device"})
+			return
+		}
+
+				// 2. Safely print the value (note: you fetched address 0, not 100-109)
+		fmt.Printf("Register value: %v\n", Output)
+
+		// 3. Convert uint16 to standard int, then to a string
+		iOut := strconv.Itoa(int(Output))
+
+		// 4. Send the successful JSON response using clean key-value syntax
+		c.JSON(http.StatusOK, gin.H{
+			"Output": iOut,
+		})
+
+}
+}
+
 
 func main() {
     // ... setup your gin router 'r' and your modbus 'client' ...
@@ -72,8 +96,15 @@ func main() {
 	}
 	defer client.Close() // Automatically close the connection when main exits
 
+	r.GET("/hello", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Hello from Gin!",
+		})
+	})
 
     // Deploy endpoints pointing to different Modbus registers effortlessly
+	r.GET("/OutputTotal", MakeModbusReadHandler(client,0))
+
     r.POST("/ModuleOneWord", MakeModbusWriteHandler(client, 0))
     r.POST("/ModuleTwoWord", MakeModbusWriteHandler(client, 1))
     r.POST("/ModuleThreeWord", MakeModbusWriteHandler(client, 2))

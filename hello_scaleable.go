@@ -81,7 +81,7 @@ func main() {
     // ... setup your gin router 'r' and your modbus 'client' ...
 	r := gin.Default()
 	client, err := modbus.NewClient(&modbus.ClientConfiguration{
-		URL:     "tcp://192.168.1.35:502", // Replace with your target device IP/Port
+		URL:     "tcp://localhost:502", // Replace with your target device IP/Port
 		Timeout: 1 * time.Second,
 	})
 	if err != nil {

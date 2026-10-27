@@ -81,7 +81,7 @@ func main() {
     // ... setup your gin router 'r' and your modbus 'client' ...
 	r := gin.Default()
 	client, err := modbus.NewClient(&modbus.ClientConfiguration{
-		URL:     "tcp://localhost:502", // Replace with your target device IP/Port
+		URL:     "tcp://127.0.0.1:502", // Replace with your target device IP/Port
 		Timeout: 1 * time.Second,
 	})
 	if err != nil {
@@ -93,9 +93,9 @@ func main() {
 	if err != nil {
 		fmt.Printf("failed to connect to Modbus device: %v\n", err)
 		return
+	} else {
+		defer client.Close() // Automatically close the connection when main exits
 	}
-	defer client.Close() // Automatically close the connection when main exits
-
 	r.GET("/hello", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Hello from Gin!",
@@ -112,3 +112,4 @@ func main() {
     
     r.Run(":8080")
 }
+

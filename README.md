@@ -1,7 +1,7 @@
-docker load -i pfc300dynmodapi.tar
+docker load -i modbusapi.tar
 
 
-docker run -d -p 8080:8080 --name my-api dynmodapi:arm64
+docker run -d -p --network=host --name my-api modbusapipfc300
 
 curl -X POST http://localhost:8080/ModuleOneWord      -H "Content-Type: application/json"      -d '{"value": "7"}'
 

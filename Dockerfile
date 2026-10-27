@@ -41,6 +41,6 @@ COPY --from=builder /app/hello /app/hello
 # Use the non-root user
 USER appuser
 
-EXPOSE 8080
+EXPOSE 8080 502
 
 ENTRYPOINT ["/app/hello"]
